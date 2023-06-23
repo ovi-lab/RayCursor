@@ -1,0 +1,15 @@
+{
+    "name": "inria.loki.raycursor",
+    "version": "0.1.0",
+    "displayName": "RayCursor",
+    "description": "RayCursor",
+    "unity": "2018.3",
+    "dependencies": {
+    },
+    "author": {
+        "name": "Géry Casiez",
+        "email": "gery.casiez@univ-lille.fr"
+    },
+    "scopedRegistries": [
+    ]
+}
