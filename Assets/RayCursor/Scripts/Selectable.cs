@@ -32,8 +32,9 @@ namespace RayCursor
         private static HashSet<Selectable> AllSelectables = new HashSet<Selectable>();
        
         
-        public event System.Action OnSelect;
-        
+        public event System.Action<Selectable> OnSelect;
+        public event System.Action<Selectable> OnHighlight;
+        public event System.Action<Selectable> OnClosest;
 
         public void OnEnable()
         {
@@ -64,9 +65,9 @@ namespace RayCursor
 
         internal void Select()
         {
-            Debug.Log("Selected: " + gameObject.name);
+            Debug.Log("Selected: " + transform.parent.name);
             if (OnSelect != null)
-                OnSelect();
+                OnSelect(this);
         }
 
 
@@ -98,6 +99,9 @@ namespace RayCursor
             get { return highlightable && SecondMaterial != null; }
             set
             {
+                if (value && OnClosest != null)
+                    OnClosest(this);
+
                 if (!highlightable)
                     value = false;
                 if (value == (SecondMaterial != null))
@@ -105,6 +109,8 @@ namespace RayCursor
 
                 if (value)
                 {
+                    if (OnHighlight != null)
+                        OnHighlight(this);
                     SecondMaterial = RayCursor.instance.highlightMaterial;
                 }
                 else
@@ -138,4 +144,3 @@ namespace RayCursor
 
     }
 }
-

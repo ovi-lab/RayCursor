@@ -45,7 +45,8 @@ namespace RayCursor
         public static bool Enabled { get { return Loaded && instance.enabled; } }
         public static Material HighLightMaterial { get { return Loaded ? instance.highlightMaterial : null; } }
 
-
+        public delegate bool CheckDistance(Selectable selectable);
+        public CheckDistance CheckDistanceDelegate;
 
 
 
@@ -70,6 +71,8 @@ namespace RayCursor
 
 
         public bool rayFiltered;
+
+        public float minHighlightDist = 100f;
 
 
 
@@ -101,6 +104,7 @@ namespace RayCursor
 
 
         private Selectable previousClosest = null;
+        private Selectable closest;
 
         void Update()
         {
@@ -115,7 +119,7 @@ namespace RayCursor
             if (rayFiltered != ray.FilterEnabled)
                 ray.FilterEnabled = rayFiltered;
             
-            Selectable closest = ClosestSelectable(cursor.Position);
+            closest = ClosestSelectable(cursor.Position, minHighlightDist);
             if (previousClosest != closest)
             {
                 if (previousClosest != null)
@@ -125,20 +129,38 @@ namespace RayCursor
                 previousClosest = closest;
             }
 
-            if (GetInputSelect() && closest != null)
-            {
-                closest.Select();
-                GetCursorMode().OnSelect();
-            }
+            // if (GetInputSelect() && closest != null)
+            // {
+            //     closest.Select();
+            //     GetCursorMode().OnSelect();
+            // }
+            // clicked = false;
+        }
+
+        public void OnEnable()
+        {
+            if (modes != null)
+                modes[currentMode].Init();
+        }
+
+        public void OnDisable()
+        {
+            if (previousClosest != null)
+                previousClosest.Highlighted = false;
+            previousClosest = null;
+
+            modes[currentMode].Deinit();
         }
 
 
-        public static Selectable ClosestSelectable(Vector3 p)
+        public static Selectable ClosestSelectable(Vector3 p, float minDist = 100f)
         {
             Selectable closest = null;
             float closestDist = float.MaxValue;
             foreach (Selectable s in Selectable.Enumerable)
             {
+                if (instance.CheckDistanceDelegate != null && !instance.CheckDistanceDelegate(s))
+                    continue;
                 float d = s.Distance(p);
                 if (d < closestDist)
                 {
@@ -147,7 +169,8 @@ namespace RayCursor
                 }
             }
 
-
+            if (closestDist > minDist)
+                return null;
             return closest;
         }
 
@@ -171,13 +194,23 @@ namespace RayCursor
             return transferFunctions[currentTransfertFunction];
         }
 
+        public Transform t;
+        public void PressButton()
+        {
+            if (closest != null)
+            {
+                Debug.Log("Selected: " + closest);
+                closest.Select();
+                GetCursorMode().OnSelect();
+            }
+        }
 
         /**
          * <summary>Return true only during the frame the selection button is pressed but was not pressed the frame before (like Input.GetButtonDown()).</summary>
          */
         internal bool GetInputSelect()
         {
-            return Input.GetButtonDown("RayCursorSelect");
+            return false;
         }
 
         /**
@@ -185,12 +218,12 @@ namespace RayCursor
          */
         internal bool GetInputTouch()
         {
-            return Input.GetButton("RayCursorTouch");
+            return false;
         }
 
         internal float GetInputTouchY()
         {
-            return Input.GetAxis("RayCursorTouchY");
+            return 0;
         }
     }
 
@@ -341,7 +374,7 @@ namespace RayCursor
         public override void Deinit()
         {
             base.Deinit();
-            cursor.SetVisibility(1);
+            // cursor.SetVisibility(1);
         }
 
 
@@ -488,4 +521,3 @@ namespace RayCursor
     }
     
 }
-
