@@ -48,9 +48,6 @@ namespace RayCursor
         public delegate bool CheckDistance(Selectable selectable);
         public CheckDistance CheckDistanceDelegate;
 
-
-
-
         /*
          * Instance part
          */
@@ -60,8 +57,6 @@ namespace RayCursor
         
         public Material highlightMaterial;
 
-
-
         public Mode CurrentMode = Mode.SemiAuto; // this one is displayed in the inspector
         private Mode currentMode;
         internal Dictionary<Mode, CursorMode> modes;
@@ -69,12 +64,9 @@ namespace RayCursor
         public TransferFunction currentTransfertFunction = TransferFunction.Lerp;
         internal Dictionary<TransferFunction, CursorTransferFunction> transferFunctions;
 
-
         public bool rayFiltered;
 
         public float minHighlightDist = 100f;
-
-
 
         // Start is called before the first frame update
         void Start()
@@ -101,7 +93,6 @@ namespace RayCursor
             if (instance == this)
                 instance = null;
         }
-
 
         private Selectable previousClosest = null;
         private Selectable closest;
@@ -152,7 +143,6 @@ namespace RayCursor
             modes[currentMode].Deinit();
         }
 
-
         public static Selectable ClosestSelectable(Vector3 p, float minDist = 100f)
         {
             Selectable closest = null;
@@ -174,9 +164,6 @@ namespace RayCursor
             return closest;
         }
 
-
-
-
         private void SetMode(Mode type)
         {
             modes[currentMode].Deinit();
@@ -194,7 +181,6 @@ namespace RayCursor
             return transferFunctions[currentTransfertFunction];
         }
 
-        public Transform t;
         public void PressButton()
         {
             if (closest != null)
@@ -226,8 +212,6 @@ namespace RayCursor
             return 0;
         }
     }
-
-    
 
     public abstract class CursorMode
     {
@@ -279,7 +263,6 @@ namespace RayCursor
             cursor.Visible = false;
         }
 
-
         public virtual void UpdateCurrentDistance()
         {
             CurrentDistance = Mathf.Clamp(cursorManager.GetCursorTransferFunction().ComputeDistance(CurrentDistance), 0, 100);
@@ -301,7 +284,6 @@ namespace RayCursor
     class SemiAutoMode : ManualMode
     {
         public const float FAR_DISTANCE = 1000;
-
 
         public SemiAutoMode(RayCursor cM) : base(cM) { }
 
@@ -326,7 +308,6 @@ namespace RayCursor
                 CurrentDistance = Mathf.Clamp(cursorManager.GetCursorTransferFunction().ComputeDistance(CurrentDistance), 0, 100);
             }
 
-
             if (Time.time - lastTimeTouch < timeoutTouch)
             {
                 // manual mode
@@ -350,8 +331,6 @@ namespace RayCursor
                     cursor.SetVisibility(0.5f);
                 }
             }
-
-
         }
 
         protected float GetPotentialHitDistance()
@@ -377,15 +356,11 @@ namespace RayCursor
             // cursor.SetVisibility(1);
         }
 
-
         public override void OnSelect()
         {
             lastTimeTouch = Time.time - timeoutTouch;
         }
-
     }
-
-
 
     public abstract class CursorTransferFunction
     {
@@ -425,8 +400,6 @@ namespace RayCursor
             return previousDistance + curDelta; // relative control
         }
 
-
-
         /// <param name="input">vitesse en y du doigt sur le pad (+ haut, - bas) en m/s</param>
         /// <param name="previousDistance">la distance manette-curseur actuelle, en m</param>
         /// <returns>la vitesse de déplacement du curseur (- se rapproche, + s'éloigne) en m/s</returns>
@@ -435,14 +408,10 @@ namespace RayCursor
             return input * GainFunction(input, previousDistance);
         }
 
-
-
         /// <param name="input">vitesse en y du doigt sur le pad (+ haut, - bas) en m/s</param>
         /// <param name="d_prev">la distance manette-curseur actuelle, en m</param>
         /// <returns>le gain de la vitesse de déplacement du curseur par rapport à la vitesse du doigt sur le pad</returns>
         public abstract float GainFunction(float input, float previousDistance);
-
-
 
         public bool GetInputActivation()
         {
@@ -481,7 +450,6 @@ namespace RayCursor
          * V1 0.05 0.05
          * V2 0.15 0.15
          */
-
     }
 
     class LerpDistanceTransfertFunction : CursorTransferFunction

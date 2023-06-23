@@ -27,21 +27,17 @@ namespace RayCursor
     [RequireComponent(typeof(MeshRenderer))]
     public class Selectable : MonoBehaviour
     {
-
-
         private static HashSet<Selectable> AllSelectables = new HashSet<Selectable>();
        
-        
         public event System.Action<Selectable> OnSelect;
-        public event System.Action<Selectable> OnHighlight;
+        public event System.Action<Selectable, bool> OnHighlightChange;
         public event System.Action<Selectable> OnClosest;
 
         public void OnEnable()
         {
             AllSelectables.Add(this);
 
-            highlightable = SecondMaterial == null;
-
+            highlightable = true;
 
             if (GetComponent<MeshCollider>() != null)
             {
@@ -62,14 +58,12 @@ namespace RayCursor
             AllSelectables.Remove(this);
         }
 
-
         internal void Select()
         {
             Debug.Log("Selected: " + transform.parent.name);
             if (OnSelect != null)
                 OnSelect(this);
         }
-
 
         public float Distance(Vector3 p)
         {
@@ -83,20 +77,14 @@ namespace RayCursor
                 return DistanceUtil.Dist(GetComponent<Collider>().ClosestPoint(p), p);
         }
 
-
-
         internal static IEnumerable<Selectable> Enumerable { get { return AllSelectables; } }
 
-
-
-
-
-
-
         private bool highlightable = false;
+        private bool highlighted = false;
+
         public bool Highlighted
         {
-            get { return highlightable && SecondMaterial != null; }
+            get { return highlightable && highlighted; }
             set
             {
                 if (value && OnClosest != null)
@@ -104,13 +92,18 @@ namespace RayCursor
 
                 if (!highlightable)
                     value = false;
-                if (value == (SecondMaterial != null))
+
+                if (value == highlighted)
                     return;
+
+                highlighted = value;
+                if (OnHighlightChange != null)
+                {
+                    OnHighlightChange(this, value);
+                }
 
                 if (value)
                 {
-                    if (OnHighlight != null)
-                        OnHighlight(this);
                     SecondMaterial = RayCursor.instance.highlightMaterial;
                 }
                 else
