@@ -67,6 +67,7 @@ namespace RayCursor
         public bool rayFiltered;
 
         public float minHighlightDist = 100f;
+        public bool showCursor = true;
 
         // Start is called before the first frame update
         void Start()
@@ -252,8 +253,8 @@ namespace RayCursor
 
             cursor.Distance = CurrentDistance;
 
-            ray.Visible = true;
-            cursor.Visible = true;
+            ray.Visible = true && cursorManager.showCursor;
+            cursor.Visible = true && cursorManager.showCursor;
 
         }
 

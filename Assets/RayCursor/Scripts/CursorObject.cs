@@ -30,6 +30,7 @@ namespace RayCursor
         private float baseRadius;
 
         public Color autoColor;
+        public bool showCursor = true;
 
 
         public void Start()
@@ -38,7 +39,6 @@ namespace RayCursor
             baseLightIntensity = LightIntensity;
             baseRadius = Radius;
         }
-        
 
         public Vector3 Position
         {
@@ -73,8 +73,6 @@ namespace RayCursor
             }
         }
 
-
-
         public bool Visible
         {
             get { return GetComponent<MeshRenderer>().enabled; }
@@ -85,10 +83,12 @@ namespace RayCursor
             }
         }
 
-
-
         public void SetVisibility(float visibility, bool transparent = false)
         {
+            if (!showCursor)
+            {
+                return;
+            }
             //cursor.Radius = Mathf.Lerp(baseCursorRadius * 0.1f, baseCursorRadius, visibility);
             Color c = Color.Lerp(autoColor, baseColor, visibility);
             c.a = transparent ? Mathf.Lerp(0, 1, visibility) : 1;

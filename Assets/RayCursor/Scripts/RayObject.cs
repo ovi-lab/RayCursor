@@ -44,7 +44,6 @@ namespace RayCursor
                 parent = transform.parent.gameObject;
         }
 
-
         public GameObject Parent
         {
             get { return parent; }
@@ -60,9 +59,6 @@ namespace RayCursor
             }
         }
 
-
-
-
         public bool FilterEnabled
         {
             set
@@ -77,7 +73,6 @@ namespace RayCursor
             }
             get { return oneEuroFilter != null; }
         }
-
 
         public float FilterMinCutoff
         {
@@ -101,8 +96,6 @@ namespace RayCursor
             }
         }
 
-
-
         public void Update()
         {
             if (oneEuroFilter != null)
@@ -111,8 +104,6 @@ namespace RayCursor
                 transform.position = parent.transform.position;
             }
         }
-        
-
 
         public float Distance
         {
@@ -126,8 +117,6 @@ namespace RayCursor
                     lineRenderer.SetPosition(1, Vector3.forward * 1000);
             }
         }
-        
-
 
         public bool HideRayAfterCursor
         {
@@ -138,8 +127,6 @@ namespace RayCursor
                 Distance = Distance; // just to update line length
             }
         }
-
-
 
         public bool Visible
         {
